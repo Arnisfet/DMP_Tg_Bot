@@ -1,6 +1,7 @@
 package ai.hybrid.bot;
 
 
+import ai.hybrid.bot.enums.BotState;
 import ai.hybrid.bot.service.NavigationBarService;
 import ai.hybrid.bot.service.handler.BotCommandHandler;
 import ai.hybrid.bot.service.handler.CommandDispatcher;
@@ -10,12 +11,16 @@ import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+
 public class Bot extends TelegramLongPollingBot {
     private BotConfig config;
     @Autowired
     private NavigationBarService navBar;
     @Autowired
     private CommandDispatcher commandDispatcher;
+    private Map<Long, BotState> stateMap = new ConcurrentHashMap<>();
 
     public Bot(BotConfig config) {
         this.config = config;
@@ -26,27 +31,31 @@ public class Bot extends TelegramLongPollingBot {
         if (update.hasMessage() && update.getMessage().hasText()) {
             String text = update.getMessage().getText();
             long chatId = update.getMessage().getChatId();
-            BotCommandHandler command = commandDispatcher.getHandlerMap().get(text);
-            if (command == null) {
-                SendMessage message = new SendMessage();
-                message.setChatId(String.valueOf(chatId));
-                message.setText("Hello! Choose an option: ");
+            stateMap.putIfAbsent(chatId, BotState.MAIN_MENU);
 
-                message.setReplyMarkup(navBar.getMainMenu());
+            BotCommandHandler command = commandDispatcher.getHandlerMap().get(text);
+            SendMessage message = new SendMessage();
+            message.setChatId(String.valueOf(chatId));
+
+            switch (stateMap.get(chatId)) {
+                case MAIN_MENU ->  {
+                    message.setReplyMarkup(navBar.getMainMenu());
+                    message.setText("Choose Action: ");
+                    stateMap.put(chatId, BotState.JOB);
+                }
+                case JOB -> {
+                    message.setReplyMarkup(navBar.getJobsMenu());
+                    message.setText("Choose Job: ");
+                    stateMap.put(chatId, BotState.CLUSTER);
+                }
+            }
                 try {
                     execute(message);
                 } catch (TelegramApiException e) {
                     e.printStackTrace();
                 }
-            } else {
-                try {
-                    command.handle(update, this);
-                } catch (TelegramApiException e) {
-                    throw new RuntimeException(e);
-                }
             }
         }
-    }
 
     @Override
     public String getBotUsername() {

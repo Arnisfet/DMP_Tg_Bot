@@ -9,13 +9,13 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
 @Service
-public class StartCommand implements BotCommandHandler{
+public class StopCommand implements BotCommandHandler{
     @Autowired
     NavigationBarService navigationBarService;
 
     @Override
     public String getCommand() {
-        return "Start";
+        return "Stop";
     }
 
     @Override
