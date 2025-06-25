@@ -1,18 +1,21 @@
 package ai.hybrid.bot;
 
 
+import ai.hybrid.bot.service.NavigationBarService;
+import ai.hybrid.bot.service.handler.BotCommandHandler;
+import ai.hybrid.bot.service.handler.CommandDispatcher;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
-import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
-import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class Bot extends TelegramLongPollingBot {
     private BotConfig config;
+    @Autowired
+    private NavigationBarService navBar;
+    @Autowired
+    private CommandDispatcher commandDispatcher;
 
     public Bot(BotConfig config) {
         this.config = config;
@@ -23,34 +26,24 @@ public class Bot extends TelegramLongPollingBot {
         if (update.hasMessage() && update.getMessage().hasText()) {
             String text = update.getMessage().getText();
             long chatId = update.getMessage().getChatId();
+            BotCommandHandler command = commandDispatcher.getHandlerMap().get(text);
+            if (command == null) {
+                SendMessage message = new SendMessage();
+                message.setChatId(String.valueOf(chatId));
+                message.setText("Hello! Choose an option: ");
 
-            SendMessage message = new SendMessage();
-            message.setChatId(String.valueOf(chatId));
-            message.setText("Hello! Choose an option: ");
-
-            InlineKeyboardMarkup inlineKeyboard = new InlineKeyboardMarkup();
-            List<List<InlineKeyboardButton>> rowsInline = new ArrayList<>();
-            List<InlineKeyboardButton> rowInline  = new ArrayList<>();
-
-            InlineKeyboardButton startButton = new InlineKeyboardButton();
-            startButton.setText("Start");
-            startButton.setCallbackData("startOpt");
-
-            InlineKeyboardButton reStartButton = new InlineKeyboardButton();
-            reStartButton.setText("Restart");
-            reStartButton.setCallbackData("restartOpt");
-
-            rowInline.add(startButton);
-            rowInline.add(reStartButton);
-
-            rowsInline.add(rowInline);
-
-            inlineKeyboard.setKeyboard(rowsInline);
-            message.setReplyMarkup(inlineKeyboard);
-            try {
-                execute(message);
-            } catch (TelegramApiException e) {
-                e.printStackTrace();
+                message.setReplyMarkup(navBar.getMainMenu());
+                try {
+                    execute(message);
+                } catch (TelegramApiException e) {
+                    e.printStackTrace();
+                }
+            } else {
+                try {
+                    command.handle(update, this);
+                } catch (TelegramApiException e) {
+                    throw new RuntimeException(e);
+                }
             }
         }
     }
