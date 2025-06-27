@@ -4,6 +4,5 @@ public enum BotState {
     MAIN_MENU,
     ACTION,
     JOB,
-    CLUSTER,
-    DONE
+    CLUSTER
 }

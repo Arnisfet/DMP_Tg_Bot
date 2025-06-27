@@ -8,46 +8,52 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKe
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardButton;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardRow;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
 public class NavigationBarService {
+    List<String> mainMenuList = List.of("Start", "Stop", "Delete Checkpoint", "Restart");
+    List<String> jobsMenuList = List.of("Places", "Segments", "Segments Mobile", "MMP Realtime");
+    List<String> clusterMenuList = List.of("NL", "SG", "US", "RU");
+
     public ReplyKeyboardMarkup getMainMenu() {
-        KeyboardButton startButton = KeyboardButton.builder().text("Start").build();
-        KeyboardButton stopButton = KeyboardButton.builder().text("Stop").build();
-        KeyboardButton deleteButton = KeyboardButton.builder().text("Delete Checkpoint").build();
-        KeyboardButton restartButton = KeyboardButton.builder().text("Restart").build();
-
-        List<KeyboardRow> keyboard = List.of(
-                new KeyboardRow(List.of(startButton, stopButton)),
-                new KeyboardRow(List.of(restartButton, deleteButton))
-        );
-
         return ReplyKeyboardMarkup
                 .builder()
-                .keyboard(keyboard)
+                .keyboard(keyboardBuilder(mainMenuList, 2))
                 .resizeKeyboard(true)
                 .oneTimeKeyboard(false)
                 .selective(true)
                 .build();
     }
     public ReplyKeyboardMarkup getJobsMenu() {
-        KeyboardButton startButton = KeyboardButton.builder().text("Places").build();
-        KeyboardButton stopButton = KeyboardButton.builder().text("Segments").build();
-        KeyboardButton deleteButton = KeyboardButton.builder().text("Segments Mobile").build();
-        KeyboardButton restartButton = KeyboardButton.builder().text("MMP Realtime").build();
-
-        List<KeyboardRow> keyboard = List.of(
-                new KeyboardRow(List.of(startButton, stopButton)),
-                new KeyboardRow(List.of(restartButton, deleteButton))
-        );
-
         return ReplyKeyboardMarkup
                 .builder()
-                .keyboard(keyboard)
+                .keyboard(keyboardBuilder(jobsMenuList, 2))
                 .resizeKeyboard(true)
                 .oneTimeKeyboard(false)
                 .selective(true)
                 .build();
+    }
+    public ReplyKeyboardMarkup getClusterMenu() {
+        return ReplyKeyboardMarkup
+                .builder()
+                .keyboard(keyboardBuilder(clusterMenuList, 2))
+                .resizeKeyboard(true)
+                .oneTimeKeyboard(false)
+                .selective(true)
+                .build();
+    }
+
+    private List<KeyboardRow> keyboardBuilder(List<String> labels, int buttonPerRow) {
+        List<KeyboardRow> keyboardRowsList = new ArrayList<>();
+        for (int i = 0; i < labels.size(); i += buttonPerRow) {
+            KeyboardRow row = new KeyboardRow();
+            for (int j = i; j < i + buttonPerRow && j < labels.size(); j++) {
+                row.add(new KeyboardButton(labels.get(j)));
+            }
+            keyboardRowsList.add(row);
+        }
+        return keyboardRowsList;
     }
 }
