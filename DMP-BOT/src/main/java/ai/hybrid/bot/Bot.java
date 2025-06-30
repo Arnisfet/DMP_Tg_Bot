@@ -1,12 +1,11 @@
 package ai.hybrid.bot;
 
 
+import ai.hybrid.bot.config.BotConfig;
 import ai.hybrid.bot.data.UserContext;
 import ai.hybrid.bot.enums.BotState;
 import ai.hybrid.bot.service.NavigationBarService;
-import ai.hybrid.bot.service.handler.BotCommandHandler;
 import ai.hybrid.bot.service.handler.CommandDispatcher;
-import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
@@ -34,14 +33,13 @@ public class Bot extends TelegramLongPollingBot {
         if (update.hasMessage() && update.getMessage().hasText()) {
             String text = update.getMessage().getText();
             long chatId = update.getMessage().getChatId();
-            BotCommandHandler command = commandDispatcher.getHandlerMap().get(text);
-            SendMessage message = new SendMessage();
 
+            SendMessage message = new SendMessage();
             message.setChatId(String.valueOf(chatId));
+
             stateMap.putIfAbsent(chatId, new UserContext(BotState.MAIN_MENU, "", "", ""));
             UserContext context = stateMap.get(chatId);
             BotState currentState = context.getState();
-
 
             switch (currentState) {
                 case MAIN_MENU ->  {
@@ -63,6 +61,7 @@ public class Bot extends TelegramLongPollingBot {
                     message.setReplyMarkup(navBar.getMainMenu());
                     message.setText("State chain is over: Your choice was: "
                             + context.getAction() + " " +  context.getJob() +" "+ context.getCluster());
+                    commandDispatcher.launch(context);
                 }
             }
             context.setState(stateChanger(currentState));
