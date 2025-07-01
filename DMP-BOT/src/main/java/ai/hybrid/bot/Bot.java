@@ -5,7 +5,7 @@ import ai.hybrid.bot.config.BotConfig;
 import ai.hybrid.bot.data.UserContext;
 import ai.hybrid.bot.enums.BotState;
 import ai.hybrid.bot.service.NavigationBarService;
-import ai.hybrid.bot.service.handler.CommandDispatcher;
+import ai.hybrid.bot.service.dispatcher.CommandDispatcher;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
@@ -61,7 +61,7 @@ public class Bot extends TelegramLongPollingBot {
                     message.setReplyMarkup(navBar.getMainMenu());
                     message.setText("State chain is over: Your choice was: "
                             + context.getAction() + " " +  context.getJob() +" "+ context.getCluster());
-                    commandDispatcher.launch(context);
+                    commandDispatcher.commandPull(context);
                 }
             }
             context.setState(stateChanger(currentState));
