@@ -22,7 +22,6 @@ public class Bot extends TelegramLongPollingBot {
     @Autowired
     private CommandDispatcher commandDispatcher;
     private Map<Long, UserContext> stateMap = new ConcurrentHashMap<>();
-//    private Logger log = Logger();
 
     public Bot(BotConfig config) {
         this.config = config;

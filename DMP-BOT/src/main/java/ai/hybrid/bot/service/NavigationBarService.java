@@ -1,10 +1,9 @@
 package ai.hybrid.bot.service;
 
-import org.springframework.stereotype.Component;
+import ai.hybrid.bot.config.AppButtonsConfig;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
-import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardButton;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardRow;
 
@@ -13,14 +12,12 @@ import java.util.List;
 
 @Service
 public class NavigationBarService {
-    List<String> mainMenuList = List.of("Start", "Stop", "Delete Checkpoint", "Restart");
-    List<String> jobsMenuList = List.of("Places", "Segments", "Segments Mobile", "MMP Realtime");
-    List<String> clusterMenuList = List.of("NL", "SG", "US", "RU");
-
+    @Autowired
+    AppButtonsConfig buttons;
     public ReplyKeyboardMarkup getMainMenu() {
         return ReplyKeyboardMarkup
                 .builder()
-                .keyboard(keyboardBuilder(mainMenuList, 2))
+                .keyboard(keyboardBuilder(buttons.getMenu(), 2))
                 .resizeKeyboard(true)
                 .oneTimeKeyboard(false)
                 .selective(true)
@@ -29,7 +26,7 @@ public class NavigationBarService {
     public ReplyKeyboardMarkup getJobsMenu() {
         return ReplyKeyboardMarkup
                 .builder()
-                .keyboard(keyboardBuilder(jobsMenuList, 2))
+                .keyboard(keyboardBuilder(buttons.getJobs(), 2))
                 .resizeKeyboard(true)
                 .oneTimeKeyboard(false)
                 .selective(true)
@@ -38,7 +35,7 @@ public class NavigationBarService {
     public ReplyKeyboardMarkup getClusterMenu() {
         return ReplyKeyboardMarkup
                 .builder()
-                .keyboard(keyboardBuilder(clusterMenuList, 2))
+                .keyboard(keyboardBuilder(buttons.getClusters(), 2))
                 .resizeKeyboard(true)
                 .oneTimeKeyboard(false)
                 .selective(true)
