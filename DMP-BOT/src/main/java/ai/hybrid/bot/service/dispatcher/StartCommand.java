@@ -33,9 +33,10 @@ public class StartCommand implements CommandInterface{
             session.connect();
 
             ChannelExec channel = (ChannelExec) session.openChannel("exec");
-            channel.setCommand("nohup bash "
-                    + scriptPath + job + ".sh" + " > " + config.getLogfile());
+            channel.setCommand("cd " + scriptPath + " && nohup bash "
+                    + scriptPath + job + ".sh" + " >> " + config.getLogfile() + " 2>&1 &");
             channel.connect();
+//            Thread.sleep(15000);
 
             System.out.println("Script launched on " + config.getHost() + ": " + scriptPath);
 
