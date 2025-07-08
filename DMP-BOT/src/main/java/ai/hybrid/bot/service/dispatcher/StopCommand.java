@@ -27,10 +27,9 @@ public class StopCommand implements CommandInterface {
 
     /**
      * @param config
-     * @param action
      */
     @Override
-    public void launch(SshConfig.ClusterConfig config, String action, String job) {
+    public void launch(SshConfig.ClusterConfig config, String job) {
         String host = config.getHost();
         String query = UriComponentsBuilder.newInstance()
                 .scheme("http")

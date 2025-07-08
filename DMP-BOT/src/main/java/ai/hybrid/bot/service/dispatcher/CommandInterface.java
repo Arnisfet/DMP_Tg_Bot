@@ -4,5 +4,5 @@ import ai.hybrid.bot.config.SshConfig;
 
 public interface CommandInterface {
     public String getCommand();
-    public void launch(SshConfig.ClusterConfig config, String action, String job);
+    public void launch(SshConfig.ClusterConfig config, String job);
 }

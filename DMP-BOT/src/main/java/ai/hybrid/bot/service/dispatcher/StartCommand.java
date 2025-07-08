@@ -15,10 +15,10 @@ public class StartCommand implements CommandInterface{
     }
 
     @Override
-    public void launch(SshConfig.ClusterConfig config, String action, String job) {
-        String scriptPath = config.getScripts().get(action);
+    public void launch(SshConfig.ClusterConfig config, String job) {
+        String scriptPath = config.getScripts().get(getCommand());
         if (scriptPath == null) {
-            System.err.println("No script for action: " + action);
+            System.err.println("No script for action: " + getCommand());
             return;
         }
         try {

@@ -21,12 +21,11 @@ public class RestartCommand  implements CommandInterface {
 
     /**
      * @param config
-     * @param action
      * @param job
      */
     @Override
-    public void launch(SshConfig.ClusterConfig config, String action, String job) {
-        stopCommand.launch(config, action, job);
-        startCommand.launch(config, action, job);
+    public void launch(SshConfig.ClusterConfig config, String job) {
+        stopCommand.launch(config, job);
+        startCommand.launch(config, job);
     }
 }

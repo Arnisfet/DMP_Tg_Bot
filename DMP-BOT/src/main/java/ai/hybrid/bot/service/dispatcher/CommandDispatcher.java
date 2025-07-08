@@ -28,6 +28,6 @@ public class CommandDispatcher {
             System.out.println("Error");
             return;
         }
-        command.launch(config, action, job);
+        command.launch(config, job);
     }
 }
