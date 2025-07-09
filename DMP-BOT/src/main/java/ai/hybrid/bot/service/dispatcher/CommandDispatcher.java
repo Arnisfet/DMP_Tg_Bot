@@ -10,6 +10,7 @@ import java.util.stream.Collectors;
 
 @Component
 public class CommandDispatcher {
+    private String BASE_PATH = "/tmp/checkpoint/";
     private Map<String, CommandInterface> commandMap;
     private final SshConfig sshConfig;
     CommandDispatcher(List<CommandInterface> commandList, SshConfig sshConfig) {

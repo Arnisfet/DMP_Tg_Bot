@@ -6,6 +6,9 @@ import ai.hybrid.bot.data.UserContext;
 import ai.hybrid.bot.enums.BotState;
 import ai.hybrid.bot.service.NavigationBarService;
 import ai.hybrid.bot.service.dispatcher.CommandDispatcher;
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.Valid;
+import jakarta.validation.Validator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
@@ -13,6 +16,7 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class Bot extends TelegramLongPollingBot {
@@ -21,6 +25,8 @@ public class Bot extends TelegramLongPollingBot {
     private NavigationBarService navBar;
     @Autowired
     private CommandDispatcher commandDispatcher;
+    @Autowired
+    private Validator validator;
     private Map<Long, UserContext> stateMap = new ConcurrentHashMap<>();
 
     public Bot(BotConfig config) {
@@ -57,19 +63,26 @@ public class Bot extends TelegramLongPollingBot {
                 }
                 case CLUSTER -> {
                     context.setCluster(text);
-                    message.setReplyMarkup(navBar.getMainMenu());
-                    message.setText("State chain is over: Your choice was: "
-                            + context.getAction() + " " +  context.getJob() +" "+ context.getCluster());
-                    commandDispatcher.commandPull(context);
+                    var violations = validator.validate(context);
+                    if (!violations.isEmpty()) {
+                        message.setReplyMarkup(navBar.getMainMenu());
+                        String error = validationMessageBuilder(violations);
+                        message.setText(error);
+                        executeSafe(message);
+                        return;
+                    }
+                    else {
+                        message.setReplyMarkup(navBar.getMainMenu());
+                        message.setText("✅ All set! Your choice was: "
+                                + context.getAction() + " | "
+                                + context.getJob() + " | "
+                                + context.getCluster());
+                        commandDispatcher.commandPull(context);
+                    }
                 }
             }
             context.setState(stateChanger(currentState));
-
-            try {
-                execute(message);
-            } catch (TelegramApiException e) {
-                e.printStackTrace();
-                }
+            executeSafe(message);
             }
     }
     public BotState stateChanger(BotState current) {
@@ -80,7 +93,25 @@ public class Bot extends TelegramLongPollingBot {
             case CLUSTER -> BotState.MAIN_MENU;
         };
     }
+    private void executeSafe(SendMessage msg) {
+        try {
+            execute(msg);
+        } catch (TelegramApiException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
+
+    private String validationMessageBuilder(Set<ConstraintViolation<UserContext>> violations) {
+        StringBuilder builder = new StringBuilder("Incorrect states found: \n");
+        violations.forEach(violation -> {
+            builder.append("Property: ");
+            builder.append(violation.getPropertyPath().toString());
+            builder.append("; Message: ");
+            builder.append(violation.getMessage() + "\n");
+        });
+        return builder.toString();
+    }
     @Override
     public String getBotUsername() {
         return config.getUsername();
