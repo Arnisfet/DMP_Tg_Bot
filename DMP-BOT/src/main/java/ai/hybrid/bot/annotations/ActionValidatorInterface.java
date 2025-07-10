@@ -12,7 +12,7 @@ import java.lang.annotation.*;
 @Target({ElementType.FIELD})
 @Retention(RetentionPolicy.RUNTIME)
 public @interface ActionValidatorInterface {
-    String message() default "Invalid action";
+    String message() default "Invalid option!";
     Class<?>[] groups() default {};
     Class<? extends Payload>[] payload() default {};
 

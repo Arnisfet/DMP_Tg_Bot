@@ -15,4 +15,10 @@ public class UserContext {
     String job;
     @ActionValidatorInterface(state = BotState.CLUSTER)
     String cluster;
+
+    public void clear() {
+        action = "";
+        job = "";
+        cluster = "";
+    }
 }
