@@ -11,6 +11,7 @@ import java.util.Map;
 @ConfigurationProperties(prefix = "apps")
 @Data
 public class AppButtonsConfig {
+    private List<String> menu;
     private List<String> actions;
     private List<String> jobs;
     private List<String> clusters;

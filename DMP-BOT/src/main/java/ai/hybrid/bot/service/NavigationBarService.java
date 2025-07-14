@@ -17,6 +17,15 @@ public class NavigationBarService {
     public ReplyKeyboardMarkup getMainMenu() {
         return ReplyKeyboardMarkup
                 .builder()
+                .keyboard(keyboardBuilder(buttons.getMenu(), 2))
+                .resizeKeyboard(true)
+                .oneTimeKeyboard(false)
+                .selective(true)
+                .build();
+    }
+    public ReplyKeyboardMarkup getActions() {
+        return ReplyKeyboardMarkup
+                .builder()
                 .keyboard(keyboardBuilder(buttons.getActions(), 2))
                 .resizeKeyboard(true)
                 .oneTimeKeyboard(false)

@@ -35,4 +35,13 @@ public class ValidationTest {
             assertEquals("Invalid option!", violation.getMessage());
         }
     }
+        @Test
+        public void incorrectMenuTest() {
+            UserContext context = new UserContext(BotState.MAIN_MENU, "Start", "gjdjf", "BJ");
+            Set<ConstraintViolation<UserContext>> violations = validator.validate(context);
+            Assertions.assertEquals(3, violations.size());
+            for (ConstraintViolation<UserContext> violation : violations) {
+                assertEquals("Invalid option!", violation.getMessage());
+            }
+        }
 }

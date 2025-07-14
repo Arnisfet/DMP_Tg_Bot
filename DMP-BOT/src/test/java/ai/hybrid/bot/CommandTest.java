@@ -11,10 +11,12 @@ import com.jcraft.jsch.ChannelExec;
 import com.jcraft.jsch.JSch;
 import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.Session;
-import org.junit.jupiter.api.Test;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.ResponseEntity;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.util.Assert;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -22,6 +24,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 import java.util.List;
 import java.util.Optional;
 
+@RunWith(SpringJUnit4ClassRunner.class)
 @SpringBootTest(properties = "spring.profiles.active=dev")
 public class CommandTest {
     @Autowired
@@ -48,7 +51,8 @@ public class CommandTest {
                 .scheme("http")
                 .host(host)
                 .port(8088)
-                .path("/ws/v1/cluster/apps?states=ACCEPTED")
+                .path("/ws/v1/cluster/apps")
+                .queryParam("states", "RUNNING,ACCEPTED")
                 .build().toUriString();
         Thread.sleep(20000);
 
@@ -77,7 +81,8 @@ public class CommandTest {
                 .scheme("http")
                 .host(host)
                 .port(8088)
-                .path("/ws/v1/cluster/apps?states=ACCEPTED")
+                .path("/ws/v1/cluster/apps")
+                .queryParam("states", "RUNNING,ACCEPTED")
                 .build().toUriString();
         Thread.sleep(20000);
 

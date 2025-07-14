@@ -26,10 +26,14 @@ public class ActionValidator implements ConstraintValidator<ActionValidatorInter
     @Override
     public boolean isValid(String value, ConstraintValidatorContext constraintValidatorContext) {
         return switch(state) {
-            case MAIN_MENU -> false;
+            case INIT -> false;
+            case MAIN_MENU -> appButtonsConfig.getMenu().contains(value);
             case ACTION -> appButtonsConfig.getActions().contains(value);
             case JOB -> appButtonsConfig.getJobs().contains(value);
             case CLUSTER -> appButtonsConfig.getClusters().contains(value);
+            case HEALTH_INIT -> false;
+            case HEALTH_OPTION -> false;
+            case HEALTH_RESULT -> false;
         };
     }
 }
