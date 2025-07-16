@@ -41,17 +41,17 @@ public class Bot extends TelegramLongPollingBot {
                 executeSafe(deny);
                 return;
             }
-            SendMessage message = new SendMessage();
-            message.setChatId(String.valueOf(chatId));
-
-            if (stateMap.isEmpty()){
-                message.setText("👋 Hello! I’m your DMP Bot 🤖\nPlease choose an option using the buttons below ⬇️");
-                executeSafe(message);
-            }
-
             stateMap.putIfAbsent(chatId, new UserContext(BotState.INIT, "", "", ""));
             UserContext context = stateMap.get(chatId);
             BotState currentState = context.getState();
+
+            SendMessage message = new SendMessage();
+            message.setChatId(String.valueOf(chatId));
+
+            if (currentState == BotState.INIT){
+                message.setText("👋 Hello! I’m your DMP Bot 🤖\nPlease choose an option using the buttons below ⬇️");
+                executeSafe(message);
+            }
 
             //In case of back symbol
             if (text.equals("⬅️")) {
@@ -62,6 +62,10 @@ public class Bot extends TelegramLongPollingBot {
             }
             // The main service of statement logic
             message = botStateService.launchStateHandler(currentState, message, context, text);
+            // In case the handler finished exec sequence
+            if (context.getState() == null) {
+                currentState = BotState.INIT;
+            }
             context.setState(currentState.next());
             executeSafe(message);
         }

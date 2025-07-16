@@ -33,4 +33,8 @@ build/
 .vscode/
 
 *.yaml
-id_rsa
+
+# But do NOT ignore this specific file
+!application_example.yaml
+
+id_rsa*

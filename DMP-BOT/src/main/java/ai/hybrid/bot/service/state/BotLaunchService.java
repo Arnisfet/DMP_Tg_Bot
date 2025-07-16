@@ -24,52 +24,53 @@ public class BotLaunchService {
     public SendMessage launchStateHandler(BotState currentState, SendMessage message, UserContext context, String text) {
         return switch (currentState) {
             case INIT -> null;
-            case MAIN_MENU -> actionHandler(context, message, text);
-            case ACTION -> jobHandler(context, message, text);
-            case JOB -> clusterHandler(context, message, text);
-            case CLUSTER -> execution(context, message, text);
+            case MAIN_MENU -> launchMenuHandler(context, message, text);
+            case ACTION -> actionHandler(context, message, text);
+            case JOB -> jobHandler(context, message, text);
+            case CLUSTER -> clusterHandler(context, message, text);
             case HEALTH_INIT -> null;
             case HEALTH_OPTION -> null;
             case HEALTH_RESULT -> null;
         };
     }
 
-    public SendMessage actionHandler(UserContext context, SendMessage message, String text) {
-        context.setAction(text);
+    public SendMessage launchMenuHandler(UserContext context, SendMessage message, String text) {
         message.setReplyMarkup(navBar.getActions());
         message.setText("Choose Action: ");
         return message;
     }
-    public SendMessage jobHandler(UserContext context, SendMessage message, String text) {
-        context.setJob(text);
+    public SendMessage actionHandler(UserContext context, SendMessage message, String text) {
+        context.setAction(text);
         message.setReplyMarkup(navBar.getJobsMenu());
         message.setText("Choose job: ");
         return message;
     }
-
-    public SendMessage clusterHandler(UserContext context, SendMessage message, String text) {
+    public SendMessage jobHandler(UserContext context, SendMessage message, String text) {
         context.setJob(text);
         message.setReplyMarkup(navBar.getClusterMenu());
         message.setText("Choose cluster: ");
         return message;
     }
-    public SendMessage execution(UserContext context, SendMessage message, String text) {
+
+    public SendMessage clusterHandler(UserContext context, SendMessage message, String text) {
         context.setCluster(text);
+        message.setReplyMarkup(navBar.getClusterMenu());
+        execution(context, message);
+        return message;
+    }
+    public void execution(UserContext context, SendMessage message) {
+        message.setReplyMarkup(navBar.getMainMenu());
         var violations = validator.validate(context);
         if (!violations.isEmpty()) {
-            message.setReplyMarkup(navBar.getMainMenu());
             String error = messageBuilder.validationMessageBuilder(violations);
             message.setText(error);
-            context.clear();
         } else {
-            message.setReplyMarkup(navBar.getMainMenu());
             message.setText("✅ All set! Your choice was: "
                     + context.getAction() + " | "
                     + context.getJob() + " | "
-                    + context.getCluster());
+                    + context.getCluster() + "\nChoose next step.");
             commandDispatcher.commandPull(context);
-            context.clear();
         }
-        return message;
+        context.clear();
     }
 }

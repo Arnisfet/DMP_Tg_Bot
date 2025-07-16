@@ -1,0 +1,85 @@
+telegram:
+  bot:
+    username:
+    token:
+
+server:
+  port: 45080
+
+ssh:
+  clusters:
+    NL:
+      host:
+      user:
+      privateKey:
+      passphrase:
+      scripts:
+       Start:
+
+    RU:
+      host:
+      user:
+      privateKey:
+      passphrase:
+      logfile:
+      scripts:
+        Start:
+    US:
+      host:
+      user:
+      privateKey:
+      passphrase: ""
+      logfile:
+      scripts:
+        Start:
+    SG:
+      host:
+      user:
+      privateKey:
+      passphrase:
+      logfile:
+      scripts:
+        Start:
+apps:
+  menu:
+    - Launch
+    - Check Health
+  actions:
+    - Start
+    - Stop
+    - Delete Checkpoint
+    - Restart
+  jobs:
+    - Test1
+    - Test2
+    - Test3
+    - Test4
+    - Test5
+    - Test6
+    - ⬅️
+
+  clusters:
+    - NL
+    - SG
+    - US
+    - RU
+    - ⬅️
+
+
+  checkpoints:
+    IdentityStreamingSaver: identity
+    ShopAudienceStreaming: mmp_shop
+    AerospikeSaver: aero_save
+    MobileSaver: save_mobile
+    MmpStreamingSaver: mmp_saver
+    DsEtlMinToWinPricesSave: min_to_win
+    PixelEventsSave: pixel_events
+    MmpRealtimeStreaming: mmp_realtime
+    HybridSegments: segments
+    HybridSegmentsMobile: segments_mobile
+    PlacesStreaming: places
+
+auth:
+  users:
+    -
+    -

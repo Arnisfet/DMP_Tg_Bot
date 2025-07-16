@@ -8,7 +8,6 @@ public enum BotState {
     ACTION,
     JOB,
     CLUSTER,
-//    EXECUTE,
 
     // Health Check flow
     HEALTH_INIT,
@@ -21,6 +20,8 @@ public enum BotState {
             case ACTION -> BotState.JOB;
             case JOB -> BotState.CLUSTER;
             case CLUSTER -> BotState.INIT;
+
+
             case HEALTH_INIT -> null;
             case HEALTH_OPTION -> null;
             case HEALTH_RESULT -> null;

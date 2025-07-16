@@ -21,7 +21,7 @@ public class BotStateService {
             case INIT -> mainMenuHandler(message);
             case MAIN_MENU -> routeByMainMenuChoice(context, message, text);
 
-            case CLUSTER, JOB, ACTION -> botLaunchService.execution(context, message, text);
+            case CLUSTER, JOB, ACTION -> botLaunchService.launchStateHandler(currentState, message, context, text);
 
             case HEALTH_INIT -> null;
             case HEALTH_OPTION -> null;
@@ -30,17 +30,17 @@ public class BotStateService {
     }
 
     private SendMessage routeByMainMenuChoice(UserContext context, SendMessage message, String text) {
-        if (text.equalsIgnoreCase("🚀 Launch")) {
-            context.setState(BotState.ACTION);
-            return botLaunchService.actionHandler(context, message, text);
+        if (text.equalsIgnoreCase("Launch")) {
+            context.setState(BotState.MAIN_MENU);
+            return botLaunchService.launchMenuHandler(context, message, text);
 
-        } else if (text.equalsIgnoreCase("🩺 Health Check")) {
+        } else if (text.equalsIgnoreCase("Health Check")) {
             context.setState(BotState.HEALTH_INIT);
             return botHealthService.actionHandler();
 
         } else {
             message.setText("❓ Unknown command. Please choose an option.");
-            message.setReplyMarkup(navBar.mainMenu());
+            message.setReplyMarkup(navBar.getMainMenu());
             return message;
         }
     }

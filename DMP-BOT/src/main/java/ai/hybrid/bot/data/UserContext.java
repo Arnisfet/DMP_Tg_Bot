@@ -20,5 +20,6 @@ public class UserContext {
         action = "";
         job = "";
         cluster = "";
+        state = null;
     }
 }
